@@ -46,10 +46,10 @@ public class LuciddreamDimension {
 		double y = entity.getY();
 		double z = entity.getZ();
 		if (event.getFrom() == ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse("lucidnight:luciddream"))) {
-			LuciddreamPlayerLeavesDimensionProcedure.execute(world, x, y, z);
+			LuciddreamPlayerLeavesDimensionProcedure.execute(world, x, y, z, entity);
 		}
 		if (event.getTo() == ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse("lucidnight:luciddream"))) {
-			LuciddreamPlayerEntersDimensionProcedure.execute(world, x, y, z);
+			LuciddreamPlayerEntersDimensionProcedure.execute(world, x, y, z, entity);
 		}
 	}
 }
