@@ -149,6 +149,36 @@
         ]
       },
       "path": "~/luciddreamworld"
+    },
+    {
+      "name": "WakeupOnKeyPressed",
+      "type": "procedure",
+      "compiles": true,
+      "locked_code": false,
+      "registry_name": "wakeup_on_key_pressed",
+      "metadata": {
+        "dependencies": [
+          {
+            "name": "entity",
+            "type": "entity"
+          }
+        ],
+        "files": [
+          "src/main/java/net/mcreator/lucidnight/procedures/WakeupOnKeyPressedProcedure.java"
+        ]
+      }
+    },
+    {
+      "name": "Wakeup",
+      "type": "keybind",
+      "compiles": true,
+      "locked_code": false,
+      "registry_name": "wakeup",
+      "metadata": {
+        "files": [
+          "src/main/java/net/mcreator/lucidnight/network/WakeupMessage.java"
+        ]
+      }
     }
   ],
   "variable_elements": [],
@@ -163,7 +193,8 @@
   "language_map": {
     "en_us": {
       "biome.lucidnight.lucidplains": "Lucid plains",
-      "biome.lucidnight.nightmareplains": "Nightmare plains"
+      "biome.lucidnight.nightmareplains": "Nightmare plains",
+      "key.lucidnight.wakeup": "Wake up in lucid dream"
     }
   },
   "metadata": {
@@ -171,6 +202,7 @@
       "src/main/java/net/mcreator/lucidnight/init/LucidnightModBiomes.java",
       "src/main/java/net/mcreator/lucidnight/mixin/NoiseGeneratorSettingsMixin.java",
       "src/main/java/net/mcreator/lucidnight/client/LucidnightModSkyboxRenderer.java",
+      "src/main/java/net/mcreator/lucidnight/init/LucidnightModKeyMappings.java",
       "src/main/resources/pack.mcmeta",
       "src/main/resources/META-INF/neoforge.mods.toml",
       "src/main/resources/lucidnight.mixins.json",

@@ -1,0 +1,10 @@
+{
+  "_fv": 89,
+  "_type": "keybind",
+  "definition": {
+    "triggerKey": "R",
+    "keyBindingName": "Wake up in lucid dream",
+    "keyBindingCategoryKey": "gameplay",
+    "onKeyPressed": "WakeupOnKeyPressed"
+  }
+}
