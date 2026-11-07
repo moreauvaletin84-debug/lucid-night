@@ -17,25 +17,72 @@
           "src/main/java/net/mcreator/lucidnight/procedures/FreamgambleProcedure.java"
         ]
       }
+    },
+    {
+      "name": "Lucidplains",
+      "type": "biome",
+      "compiles": true,
+      "locked_code": false,
+      "registry_name": "lucidplains",
+      "metadata": {
+        "files": [
+          "src/main/resources/data/lucidnight/worldgen/biome/lucidplains.json"
+        ]
+      },
+      "path": "~/luciddreamworld"
+    },
+    {
+      "name": "Luciddream",
+      "type": "dimension",
+      "compiles": true,
+      "locked_code": false,
+      "registry_name": "luciddream",
+      "metadata": {
+        "files": [
+          "src/main/resources/data/lucidnight/dimension/luciddream.json",
+          "src/main/resources/data/lucidnight/timeline/luciddream_effects.json",
+          "src/main/resources/data/lucidnight/dimension_type/luciddream.json"
+        ]
+      },
+      "path": "~/luciddreamworld"
     }
   ],
   "variable_elements": [],
   "sound_elements": [],
-  "tag_elements": {},
+  "tag_elements": {
+    "BLOCKS:minecraft:overworld_carver_replaceables": [
+      "~Luciddream@Blocks.DIRT#0",
+      "~Luciddream@Blocks.GRASS"
+    ]
+  },
   "tab_element_order": {},
   "language_map": {
-    "en_us": {}
+    "en_us": {
+      "biome.lucidnight.lucidplains": "Lucid plains"
+    }
   },
   "metadata": {
     "files": [
+      "src/main/java/net/mcreator/lucidnight/mixin/LevelStorageSourceMixin.java",
+      "src/main/java/net/mcreator/lucidnight/init/LucidnightModBiomes.java",
+      "src/main/java/net/mcreator/lucidnight/mixin/NoiseGeneratorSettingsMixin.java",
+      "src/main/java/net/mcreator/lucidnight/mixin/BiomeSourcePresetMixin.java",
+      "src/main/java/net/mcreator/lucidnight/client/LucidnightModSkyboxRenderer.java",
       "src/main/resources/pack.mcmeta",
       "src/main/resources/META-INF/neoforge.mods.toml",
+      "src/main/resources/lucidnight.mixins.json",
+      "src/main/resources/META-INF/accesstransformer.cfg",
       "src/main/java/net/mcreator/lucidnight/LucidnightMod.java"
     ]
   },
   "foldersRoot": {
     "name": "~",
-    "children": []
+    "children": [
+      {
+        "name": "luciddreamworld",
+        "children": []
+      }
+    ]
   },
   "workspaceSettings": {
     "modid": "lucidnight",
