@@ -1,8 +1,5 @@
 package net.mcreator.lucidnight.client;
 
-import org.joml.Vector4f;
-import org.joml.Vector3f;
-import org.joml.Matrix4fStack;
 import org.joml.Matrix4f;
 
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -10,48 +7,31 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.api.distmarker.Dist;
 
+import net.minecraft.world.level.Level;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.state.level.SkyRenderState;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.Minecraft;
-
-import java.util.OptionalInt;
-import java.util.OptionalDouble;
 
 import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.systems.RenderPass;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.platform.GlStateManager;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class LucidnightModSkyboxRenderer {
-	private static GpuBuffer sunBuffer;
-	private static GpuBuffer moonBuffer;
-	private static GpuBuffer skyboxBuffer;
-	private static final ResourceKey LUCIDDREAM = ResourceKey.create(Registries.DIMENSION, Identifier.parse("lucidnight:luciddream"));
-	private static final Identifier LUCIDDREAM_SKYBOX = Identifier.parse("lucidnight:textures/skybox/luciddream.png");
-	private static final ResourceKey NIGHTMARE = ResourceKey.create(Registries.DIMENSION, Identifier.parse("lucidnight:nightmare"));
-	private static final Identifier NIGHTMARE_SKYBOX = Identifier.parse("lucidnight:textures/skybox/nightmare.png");
-
-	private static void initBuffers() {
-		if (sunBuffer == null)
-			sunBuffer = buildSunBuffer();
-		if (moonBuffer == null)
-			moonBuffer = buildMoonBuffer();
-		if (skyboxBuffer == null)
-			skyboxBuffer = buildSkyboxBuffer();
-	}
+	private static final ResourceKey LUCIDDREAM = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse("lucidnight:luciddream"));
+	private static final ResourceLocation LUCIDDREAM_SKYBOX = ResourceLocation.parse("lucidnight:textures/skybox/luciddream.png");
+	private static final ResourceKey NIGHTMARE = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse("lucidnight:nightmare"));
+	private static final ResourceLocation NIGHTMARE_SKYBOX = ResourceLocation.parse("lucidnight:textures/skybox/nightmare.png");
 
 	@SubscribeEvent
-	public static void renderSky(RenderLevelStageEvent.AfterSky event) {
+	public static void renderSky(RenderLevelStageEvent event) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player == null)
+			return;
+		if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_SKY)
 			return;
 		if (mc.player.level().dimension() == LUCIDDREAM) {
 			renderCustomSkybox(event, LUCIDDREAM_SKYBOX);
@@ -61,153 +41,104 @@ public class LucidnightModSkyboxRenderer {
 		}
 	}
 
-	public static void renderCustomSun(RenderLevelStageEvent.AfterSky event, Identifier textureId) {
-		initBuffers();
-		Minecraft mc = Minecraft.getInstance();
+	public static void renderCustomSun(RenderLevelStageEvent event, Level level, ResourceLocation texture) {
+		PoseStack posestack = event.getPoseStack();
+		posestack.pushPose();
+		posestack.mulPose(event.getModelViewMatrix());
+		GlStateManager._enableBlend();
+		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		GlStateManager._depthMask(false);
+		float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
+		float f11 = 1.0F - level.getRainLevel(partialTick);
+		RenderSystem.setShaderColor(1, 1, 1, f11);
+		posestack.mulPose(Axis.YP.rotationDegrees(-90.0F));
+		posestack.mulPose(Axis.XP.rotationDegrees(level.getTimeOfDay(partialTick) * 360.0F));
+		Matrix4f matrix4f1 = posestack.last().pose();
+		float f12 = 30.0F;
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderTexture(0, texture);
+		BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+		bufferbuilder.addVertex(matrix4f1, -f12, 100.0F, -f12).setUv(0.0F, 0.0F);
+		bufferbuilder.addVertex(matrix4f1, f12, 100.0F, -f12).setUv(1.0F, 0.0F);
+		bufferbuilder.addVertex(matrix4f1, f12, 100.0F, f12).setUv(1.0F, 1.0F);
+		bufferbuilder.addVertex(matrix4f1, -f12, 100.0F, f12).setUv(0.0F, 1.0F);
+		BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+		RenderSystem.setShaderColor(1, 1, 1, 1);
+		GlStateManager._disableBlend();
+		RenderSystem.defaultBlendFunc();
+		GlStateManager._depthMask(true);
+		posestack.popPose();
+	}
+
+	public static void renderCustomMoon(RenderLevelStageEvent event, Level level, ResourceLocation texture) {
+		PoseStack posestack = event.getPoseStack();
+		posestack.pushPose();
+		posestack.mulPose(event.getModelViewMatrix());
+		GlStateManager._enableBlend();
+		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		GlStateManager._depthMask(false);
+		float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
+		float f11 = 1.0F - level.getRainLevel(partialTick);
+		RenderSystem.setShaderColor(1, 1, 1, f11);
+		posestack.mulPose(Axis.YP.rotationDegrees(-90.0F));
+		posestack.mulPose(Axis.XP.rotationDegrees(level.getTimeOfDay(partialTick) * 360.0F));
+		Matrix4f matrix4f1 = posestack.last().pose();
+		float f12 = 20.0F;
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderTexture(0, texture);
+		int k = level.getMoonPhase();
+		int l = k % 4;
+		int i1 = k / 4 % 2;
+		float f13 = (float) (l) / 4.0F;
+		float f14 = (float) (i1) / 2.0F;
+		float f15 = (float) (l + 1) / 4.0F;
+		float f16 = (float) (i1 + 1) / 2.0F;
+		BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+		bufferbuilder.addVertex(matrix4f1, -f12, -100.0F, f12).setUv(f15, f16);
+		bufferbuilder.addVertex(matrix4f1, f12, -100.0F, f12).setUv(f13, f16);
+		bufferbuilder.addVertex(matrix4f1, f12, -100.0F, -f12).setUv(f13, f14);
+		bufferbuilder.addVertex(matrix4f1, -f12, -100.0F, -f12).setUv(f15, f14);
+		BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+		RenderSystem.setShaderColor(1, 1, 1, 1);
+		GlStateManager._disableBlend();
+		RenderSystem.defaultBlendFunc();
+		GlStateManager._depthMask(true);
+		posestack.popPose();
+	}
+
+	public static void renderCustomSkybox(RenderLevelStageEvent event, ResourceLocation texture) {
 		PoseStack poseStack = event.getPoseStack();
-		SkyRenderState state = event.getLevelRenderState().skyRenderState;
 		poseStack.pushPose();
-		poseStack.mulPose(Axis.YP.rotationDegrees(-90.0F));
-		poseStack.mulPose(Axis.XP.rotation(state.sunAngle));
-		Matrix4fStack modelViewStack = RenderSystem.getModelViewStack();
-		modelViewStack.pushMatrix();
-		modelViewStack.mul(poseStack.last().pose());
-		modelViewStack.translate(0.0F, 100.0F, 0.0F);
-		modelViewStack.scale(30.0F, 1.0F, 30.0F);
-		GpuBufferSlice dynamicTransforms = RenderSystem.getDynamicUniforms().writeTransform(modelViewStack, new Vector4f(1.0F, 1.0F, 1.0F, state.rainBrightness), new Vector3f(), new Matrix4f());
-		GpuTextureView color = mc.getMainRenderTarget().getColorTextureView();
-		GpuTextureView depth = mc.getMainRenderTarget().getDepthTextureView();
-		GpuBuffer indexBuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS).getBuffer(6);
-		AbstractTexture texture = mc.getTextureManager().getTexture(textureId);
-		try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(() -> "lucidnight Sun", color, OptionalInt.empty(), depth, OptionalDouble.empty())) {
-			renderPass.setPipeline(RenderPipelines.CELESTIAL);
-			RenderSystem.bindDefaultUniforms(renderPass);
-			renderPass.setUniform("DynamicTransforms", dynamicTransforms);
-			renderPass.bindTexture("Sampler0", texture.getTextureView(), texture.getSampler());
-			renderPass.setVertexBuffer(0, sunBuffer);
-			renderPass.setIndexBuffer(indexBuffer, RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS).type());
-			renderPass.drawIndexed(0, 0, 6, 1);
-		}
-		modelViewStack.popMatrix();
+		poseStack.mulPose(event.getModelViewMatrix());
+		GlStateManager._enableBlend();
+		RenderSystem.defaultBlendFunc();
+		GlStateManager._depthMask(false);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderTexture(0, texture);
+		RenderSystem.setShaderColor(1, 1, 1, 1);
+		Tesselator tesselator = Tesselator.getInstance();
+		float distance = 100.0F;
+		float size = 100.0F;
+		renderSkyboxQuad(poseStack, tesselator, -size, distance, -size, 1.0F / 4.0F, 1.0F / 3.0F, size, distance, -size, 2.0F / 4.0F, 1.0F / 3.0F, size, distance, size, 2.0F / 4.0F, 0.0F, -size, distance, size, 1.0F / 4.0F, 0.0F);
+		renderSkyboxQuad(poseStack, tesselator, -size, -distance, -size, 1.0F / 4.0F, 2.0F / 3.0F, -size, -distance, size, 1.0F / 4.0F, 3.0F / 3.0F, size, -distance, size, 2.0F / 4.0F, 3.0F / 3.0F, size, -distance, -size, 2.0F / 4.0F, 2.0F / 3.0F);
+		renderSkyboxQuad(poseStack, tesselator, -distance, -size, size, 0.0F, 2.0F / 3.0F, -distance, -size, -size, 1.0F / 4.0F, 2.0F / 3.0F, -distance, size, -size, 1.0F / 4.0F, 1.0F / 3.0F, -distance, size, size, 0.0F, 1.0F / 3.0F);
+		renderSkyboxQuad(poseStack, tesselator, -size, -size, -distance, 1.0F / 4.0F, 2.0F / 3.0F, size, -size, -distance, 2.0F / 4.0F, 2.0F / 3.0F, size, size, -distance, 2.0F / 4.0F, 1.0F / 3.0F, -size, size, -distance, 1.0F / 4.0F, 1.0F / 3.0F);
+		renderSkyboxQuad(poseStack, tesselator, distance, -size, -size, 2.0F / 4.0F, 2.0F / 3.0F, distance, -size, size, 3.0F / 4.0F, 2.0F / 3.0F, distance, size, size, 3.0F / 4.0F, 1.0F / 3.0F, distance, size, -size, 2.0F / 4.0F, 1.0F / 3.0F);
+		renderSkyboxQuad(poseStack, tesselator, size, -size, distance, 3.0F / 4.0F, 2.0F / 3.0F, -size, -size, distance, 4.0F / 4.0F, 2.0F / 3.0F, -size, size, distance, 4.0F / 4.0F, 1.0F / 3.0F, size, size, distance, 3.0F / 4.0F, 1.0F / 3.0F);
+		RenderSystem.setShaderColor(1, 1, 1, 1);
+		GlStateManager._depthMask(true);
+		GlStateManager._disableBlend();
 		poseStack.popPose();
 	}
 
-	public static void renderCustomMoon(RenderLevelStageEvent.AfterSky event, Identifier textureId) {
-		initBuffers();
-		Minecraft mc = Minecraft.getInstance();
-		PoseStack poseStack = event.getPoseStack();
-		SkyRenderState state = event.getLevelRenderState().skyRenderState;
-		poseStack.pushPose();
-		poseStack.mulPose(Axis.YP.rotationDegrees(-90.0F));
-		poseStack.mulPose(Axis.XP.rotation(state.moonAngle));
-		Matrix4fStack modelViewStack = RenderSystem.getModelViewStack();
-		modelViewStack.pushMatrix();
-		modelViewStack.mul(poseStack.last().pose());
-		modelViewStack.translate(0.0F, 100.0F, 0.0F);
-		modelViewStack.scale(20.0F, 1.0F, 20.0F);
-		GpuBufferSlice dynamicTransforms = RenderSystem.getDynamicUniforms().writeTransform(modelViewStack, new Vector4f(1.0F, 1.0F, 1.0F, state.rainBrightness), new Vector3f(), new Matrix4f());
-		GpuTextureView color = mc.getMainRenderTarget().getColorTextureView();
-		GpuTextureView depth = mc.getMainRenderTarget().getDepthTextureView();
-		GpuBuffer indexBuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS).getBuffer(6);
-		AbstractTexture texture = mc.getTextureManager().getTexture(textureId);
-		int baseVertex = state.moonPhase.index() * 4;
-		try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(() -> "lucidnight Moon", color, OptionalInt.empty(), depth, OptionalDouble.empty())) {
-			renderPass.setPipeline(RenderPipelines.CELESTIAL);
-			RenderSystem.bindDefaultUniforms(renderPass);
-			renderPass.setUniform("DynamicTransforms", dynamicTransforms);
-			renderPass.bindTexture("Sampler0", texture.getTextureView(), texture.getSampler());
-			renderPass.setVertexBuffer(0, moonBuffer);
-			renderPass.setIndexBuffer(indexBuffer, RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS).type());
-			renderPass.drawIndexed(baseVertex, 0, 6, 1);
-		}
-		modelViewStack.popMatrix();
-		poseStack.popPose();
-	}
-
-	public static void renderCustomSkybox(RenderLevelStageEvent.AfterSky event, Identifier textureId) {
-		initBuffers();
-		Minecraft mc = Minecraft.getInstance();
-		PoseStack poseStack = event.getPoseStack();
-		Matrix4fStack modelViewStack = RenderSystem.getModelViewStack();
-		modelViewStack.pushMatrix();
-		modelViewStack.mul(poseStack.last().pose());
-		GpuBufferSlice dynamicTransforms = RenderSystem.getDynamicUniforms().writeTransform(modelViewStack, new Vector4f(1.0F, 1.0F, 1.0F, 1.0F), new Vector3f(), new Matrix4f());
-		GpuTextureView color = mc.getMainRenderTarget().getColorTextureView();
-		GpuTextureView depth = mc.getMainRenderTarget().getDepthTextureView();
-		GpuBuffer indexBuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS).getBuffer(36);
-		AbstractTexture texture = mc.getTextureManager().getTexture(textureId);
-		try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(() -> "lucidnight Skybox", color, OptionalInt.empty(), depth, OptionalDouble.empty())) {
-			renderPass.setPipeline(RenderPipelines.END_SKY);
-			RenderSystem.bindDefaultUniforms(renderPass);
-			renderPass.setUniform("DynamicTransforms", dynamicTransforms);
-			renderPass.bindTexture("Sampler0", texture.getTextureView(), texture.getSampler());
-			renderPass.setVertexBuffer(0, skyboxBuffer);
-			renderPass.setIndexBuffer(indexBuffer, RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS).type());
-			renderPass.drawIndexed(0, 0, 36, 1);
-		}
-		modelViewStack.popMatrix();
-	}
-
-	private static GpuBuffer buildSunBuffer() {
-		VertexFormat format = DefaultVertexFormat.POSITION_TEX;
-		try (ByteBufferBuilder byteBufferBuilder = ByteBufferBuilder.exactlySized(4 * format.getVertexSize())) {
-			BufferBuilder bufferBuilder = new BufferBuilder(byteBufferBuilder, VertexFormat.Mode.QUADS, format);
-			bufferBuilder.addVertex(-1.0F, 0.0F, -1.0F).setUv(0.0F, 0.0F);
-			bufferBuilder.addVertex(1.0F, 0.0F, -1.0F).setUv(1.0F, 0.0F);
-			bufferBuilder.addVertex(1.0F, 0.0F, 1.0F).setUv(1.0F, 1.0F);
-			bufferBuilder.addVertex(-1.0F, 0.0F, 1.0F).setUv(0.0F, 1.0F);
-			try (MeshData mesh = bufferBuilder.buildOrThrow()) {
-				return RenderSystem.getDevice().createBuffer(() -> "lucidnight Sun", 32, mesh.vertexBuffer());
-			}
-		}
-	}
-
-	private static GpuBuffer buildMoonBuffer() {
-		VertexFormat format = DefaultVertexFormat.POSITION_TEX;
-		try (ByteBufferBuilder byteBufferBuilder = ByteBufferBuilder.exactlySized(8 * 4 * format.getVertexSize())) {
-			BufferBuilder bufferBuilder = new BufferBuilder(byteBufferBuilder, VertexFormat.Mode.QUADS, format);
-			for (int k = 0; k < 8; k++) {
-				int l = k % 4;
-				int i1 = k / 4 % 2;
-				float f13 = (float) (l) / 4.0F;
-				float f14 = (float) (i1) / 2.0F;
-				float f15 = (float) (l + 1) / 4.0F;
-				float f16 = (float) (i1 + 1) / 2.0F;
-				bufferBuilder.addVertex(-1.0F, 0.0F, -1.0F).setUv(f15, f16);
-				bufferBuilder.addVertex(1.0F, 0.0F, -1.0F).setUv(f13, f16);
-				bufferBuilder.addVertex(1.0F, 0.0F, 1.0F).setUv(f13, f14);
-				bufferBuilder.addVertex(-1.0F, 0.0F, 1.0F).setUv(f15, f14);
-			}
-			try (MeshData mesh = bufferBuilder.buildOrThrow()) {
-				return RenderSystem.getDevice().createBuffer(() -> "lucidnight Moon", 32, mesh.vertexBuffer());
-			}
-		}
-	}
-
-	private static GpuBuffer buildSkyboxBuffer() {
-		VertexFormat format = DefaultVertexFormat.POSITION_TEX_COLOR;
-		try (ByteBufferBuilder byteBufferBuilder = ByteBufferBuilder.exactlySized(24 * format.getVertexSize())) {
-			BufferBuilder bufferBuilder = new BufferBuilder(byteBufferBuilder, VertexFormat.Mode.QUADS, format);
-			float distance = 100.0F;
-			float size = 100.0F;
-			int color = 0xFFFFFFFF;
-			addSkyboxFace(bufferBuilder, -size, distance, -size, 1.0F / 4.0F, 1.0F / 3.0F, size, distance, -size, 2.0F / 4.0F, 1.0F / 3.0F, size, distance, size, 2.0F / 4.0F, 0.0F, -size, distance, size, 1.0F / 4.0F, 0.0F, color);
-			addSkyboxFace(bufferBuilder, -size, -distance, -size, 1.0F / 4.0F, 2.0F / 3.0F, -size, -distance, size, 1.0F / 4.0F, 3.0F / 3.0F, size, -distance, size, 2.0F / 4.0F, 3.0F / 3.0F, size, -distance, -size, 2.0F / 4.0F, 2.0F / 3.0F, color);
-			addSkyboxFace(bufferBuilder, -distance, -size, size, 0.0F, 2.0F / 3.0F, -distance, -size, -size, 1.0F / 4.0F, 2.0F / 3.0F, -distance, size, -size, 1.0F / 4.0F, 1.0F / 3.0F, -distance, size, size, 0.0F, 1.0F / 3.0F, color);
-			addSkyboxFace(bufferBuilder, -size, -size, -distance, 1.0F / 4.0F, 2.0F / 3.0F, size, -size, -distance, 2.0F / 4.0F, 2.0F / 3.0F, size, size, -distance, 2.0F / 4.0F, 1.0F / 3.0F, -size, size, -distance, 1.0F / 4.0F, 1.0F / 3.0F, color);
-			addSkyboxFace(bufferBuilder, distance, -size, -size, 2.0F / 4.0F, 2.0F / 3.0F, distance, -size, size, 3.0F / 4.0F, 2.0F / 3.0F, distance, size, size, 3.0F / 4.0F, 1.0F / 3.0F, distance, size, -size, 2.0F / 4.0F, 1.0F / 3.0F, color);
-			addSkyboxFace(bufferBuilder, size, -size, distance, 3.0F / 4.0F, 2.0F / 3.0F, -size, -size, distance, 4.0F / 4.0F, 2.0F / 3.0F, -size, size, distance, 4.0F / 4.0F, 1.0F / 3.0F, size, size, distance, 3.0F / 4.0F, 1.0F / 3.0F, color);
-			try (MeshData meshData = bufferBuilder.buildOrThrow()) {
-				return RenderSystem.getDevice().createBuffer(() -> "lucidnight Skybox", 40, meshData.vertexBuffer());
-			}
-		}
-	}
-
-	private static void addSkyboxFace(BufferBuilder bufferBuilder, float x1, float y1, float z1, float u1, float v1, float x2, float y2, float z2, float u2, float v2, float x3, float y3, float z3, float u3, float v3, float x4, float y4, float z4,
-			float u4, float v4, int color) {
-		bufferBuilder.addVertex(x1, y1, z1).setUv(u1, v1).setColor(color);
-		bufferBuilder.addVertex(x2, y2, z2).setUv(u2, v2).setColor(color);
-		bufferBuilder.addVertex(x3, y3, z3).setUv(u3, v3).setColor(color);
-		bufferBuilder.addVertex(x4, y4, z4).setUv(u4, v4).setColor(color);
+	private static void renderSkyboxQuad(PoseStack poseStack, Tesselator tesselator, float x1, float y1, float z1, float u1, float v1, float x2, float y2, float z2, float u2, float v2, float x3, float y3, float z3, float u3, float v3, float x4,
+			float y4, float z4, float u4, float v4) {
+		Matrix4f matrix = poseStack.last().pose();
+		BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+		buffer.addVertex(matrix, x1, y1, z1).setUv(u1, v1);
+		buffer.addVertex(matrix, x2, y2, z2).setUv(u2, v2);
+		buffer.addVertex(matrix, x3, y3, z3).setUv(u3, v3);
+		buffer.addVertex(matrix, x4, y4, z4).setUv(u4, v4);
+		BufferUploader.drawWithShader(buffer.buildOrThrow());
 	}
 }

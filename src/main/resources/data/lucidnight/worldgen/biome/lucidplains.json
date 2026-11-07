@@ -5,12 +5,10 @@
   "effects": {
     "foliage_color": 10387789,
     "grass_color": -7479159,
-    "water_color": -16724788
-  },
-  "attributes": {
-    "minecraft:visual/sky_color": -16711732,
-    "minecraft:visual/fog_color": -3342337,
-    "minecraft:visual/water_fog_color": 329011
+    "sky_color": -16711732,
+    "fog_color": -3342337,
+    "water_color": -16724788,
+    "water_fog_color": 329011
   },
   "spawners": {
     "monster": [],
@@ -23,11 +21,13 @@
     "misc": []
   },
   "spawn_costs": {},
-  "carvers": [
-    "minecraft:cave",
-    "minecraft:cave_extra_underground",
-    "minecraft:canyon"
-  ],
+  "carvers": {
+    "air": [
+      "minecraft:cave",
+      "minecraft:cave_extra_underground",
+      "minecraft:canyon"
+    ]
+  },
   "features": [
     [],
     [
