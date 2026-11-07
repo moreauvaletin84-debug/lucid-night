@@ -1,0 +1,60 @@
+{
+  "mod_elements": [
+    {
+      "name": "Test",
+      "type": "tool",
+      "compiles": true,
+      "locked_code": false,
+      "registry_name": "test",
+      "metadata": {
+        "files": [
+          "src/main/resources/assets/lucidnight/models/item/test.json",
+          "src/main/resources/assets/lucidnight/items/test.json",
+          "src/main/java/net/mcreator/lucidnight/item/TestItem.java"
+        ]
+      }
+    }
+  ],
+  "variable_elements": [],
+  "sound_elements": [],
+  "tag_elements": {
+    "ITEMS:minecraft:pickaxes": [
+      "~Test@CUSTOM:Test"
+    ]
+  },
+  "tab_element_order": {},
+  "language_map": {
+    "en_us": {
+      "item.lucidnight.test": "Test"
+    }
+  },
+  "metadata": {
+    "files": [
+      "src/main/java/net/mcreator/lucidnight/init/LucidnightModItems.java",
+      "src/main/resources/pack.mcmeta",
+      "src/main/resources/META-INF/neoforge.mods.toml",
+      "src/main/java/net/mcreator/lucidnight/LucidnightMod.java",
+      "src/main/java/net/mcreator/lucidnight/init/LucidnightModTabs.java"
+    ]
+  },
+  "foldersRoot": {
+    "name": "~",
+    "children": []
+  },
+  "workspaceSettings": {
+    "modid": "lucidnight",
+    "modName": "lucidnight",
+    "version": "1.0.0",
+    "author": "MCreator",
+    "websiteURL": "https://mcreator.net",
+    "license": "Not specified",
+    "serverSideOnly": false,
+    "requiredMods": [],
+    "dependencies": [],
+    "dependants": [],
+    "mcreatorDependencies": [],
+    "currentGenerator": "neoforge-26.1.2",
+    "modElementsPackage": "net.mcreator.lucidnight"
+  },
+  "mcreatorVersion": 202600233518
+}
