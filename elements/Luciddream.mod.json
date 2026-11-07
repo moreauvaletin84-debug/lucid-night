@@ -46,6 +46,8 @@
     "minMonsterSpawnLightLimit": 0,
     "maxMonsterSpawnLightLimit": 7,
     "monsterSpawnBlockLightLimit": 0,
+    "onPlayerEntersDimension": "LuciddreamPlayerEntersDimension",
+    "onPlayerLeavesDimension": "LuciddreamPlayerLeavesDimension",
     "portalFrame": "",
     "portalParticles": "PORTAL",
     "portalLuminance": 0,

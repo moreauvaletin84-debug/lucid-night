@@ -40,6 +40,7 @@
       "metadata": {
         "files": [
           "src/main/resources/data/lucidnight/dimension/luciddream.json",
+          "src/main/java/net/mcreator/lucidnight/world/dimension/LuciddreamDimension.java",
           "src/main/resources/data/lucidnight/timeline/luciddream_effects.json",
           "src/main/resources/data/lucidnight/dimension_type/luciddream.json"
         ]
@@ -73,6 +74,44 @@
         ]
       },
       "path": "~/nightmareworld"
+    },
+    {
+      "name": "LuciddreamPlayerEntersDimension",
+      "type": "procedure",
+      "compiles": true,
+      "locked_code": false,
+      "registry_name": "luciddream_player_enters_dimension",
+      "metadata": {
+        "dependencies": [
+          {
+            "name": "entity",
+            "type": "entity"
+          }
+        ],
+        "files": [
+          "src/main/java/net/mcreator/lucidnight/procedures/LuciddreamPlayerEntersDimensionProcedure.java"
+        ]
+      },
+      "path": "~/luciddreamworld"
+    },
+    {
+      "name": "LuciddreamPlayerLeavesDimension",
+      "type": "procedure",
+      "compiles": true,
+      "locked_code": false,
+      "registry_name": "luciddream_player_leaves_dimension",
+      "metadata": {
+        "dependencies": [
+          {
+            "name": "entity",
+            "type": "entity"
+          }
+        ],
+        "files": [
+          "src/main/java/net/mcreator/lucidnight/procedures/LuciddreamPlayerLeavesDimensionProcedure.java"
+        ]
+      },
+      "path": "~/luciddreamworld"
     }
   ],
   "variable_elements": [],
