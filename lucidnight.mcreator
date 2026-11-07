@@ -1,40 +1,36 @@
 {
   "mod_elements": [
     {
-      "name": "Test",
-      "type": "tool",
+      "name": "Freamgamble",
+      "type": "procedure",
       "compiles": true,
       "locked_code": false,
-      "registry_name": "test",
+      "registry_name": "freamgamble",
       "metadata": {
+        "dependencies": [
+          {
+            "name": "entity",
+            "type": "entity"
+          }
+        ],
         "files": [
-          "src/main/resources/assets/lucidnight/models/item/test.json",
-          "src/main/resources/assets/lucidnight/items/test.json",
-          "src/main/java/net/mcreator/lucidnight/item/TestItem.java"
+          "src/main/java/net/mcreator/lucidnight/procedures/FreamgambleProcedure.java"
         ]
       }
     }
   ],
   "variable_elements": [],
   "sound_elements": [],
-  "tag_elements": {
-    "ITEMS:minecraft:pickaxes": [
-      "~Test@CUSTOM:Test"
-    ]
-  },
+  "tag_elements": {},
   "tab_element_order": {},
   "language_map": {
-    "en_us": {
-      "item.lucidnight.test": "Test"
-    }
+    "en_us": {}
   },
   "metadata": {
     "files": [
-      "src/main/java/net/mcreator/lucidnight/init/LucidnightModItems.java",
       "src/main/resources/pack.mcmeta",
       "src/main/resources/META-INF/neoforge.mods.toml",
-      "src/main/java/net/mcreator/lucidnight/LucidnightMod.java",
-      "src/main/java/net/mcreator/lucidnight/init/LucidnightModTabs.java"
+      "src/main/java/net/mcreator/lucidnight/LucidnightMod.java"
     ]
   },
   "foldersRoot": {
