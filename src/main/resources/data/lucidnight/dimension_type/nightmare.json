@@ -14,8 +14,11 @@
     },
     "minecraft:gameplay/eyeblossom_open": true,
     "minecraft:gameplay/creaking_active": true,
-    "minecraft:visual/cloud_height": 192,
-    "minecraft:visual/cloud_color": "#ccffffff",
+    "minecraft:gameplay/bed_rule": {
+      "can_set_spawn": "never",
+      "can_sleep": "never",
+      "explodes": true
+    },
     "minecraft:visual/ambient_light_color": "#0a0a0a",
     "minecraft:visual/sunrise_sunset_color": {
       "modifier": "override",
