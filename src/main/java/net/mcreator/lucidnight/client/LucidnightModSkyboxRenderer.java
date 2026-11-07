@@ -36,6 +36,8 @@ public class LucidnightModSkyboxRenderer {
 	private static GpuBuffer skyboxBuffer;
 	private static final ResourceKey LUCIDDREAM = ResourceKey.create(Registries.DIMENSION, Identifier.parse("lucidnight:luciddream"));
 	private static final Identifier LUCIDDREAM_SKYBOX = Identifier.parse("lucidnight:textures/skybox/luciddream.png");
+	private static final ResourceKey NIGHTMARE = ResourceKey.create(Registries.DIMENSION, Identifier.parse("lucidnight:nightmare"));
+	private static final Identifier NIGHTMARE_SKYBOX = Identifier.parse("lucidnight:textures/skybox/nightmare.png");
 
 	private static void initBuffers() {
 		if (sunBuffer == null)
@@ -53,6 +55,9 @@ public class LucidnightModSkyboxRenderer {
 			return;
 		if (mc.player.level().dimension() == LUCIDDREAM) {
 			renderCustomSkybox(event, LUCIDDREAM_SKYBOX);
+		}
+		if (mc.player.level().dimension() == NIGHTMARE) {
+			renderCustomSkybox(event, NIGHTMARE_SKYBOX);
 		}
 	}
 

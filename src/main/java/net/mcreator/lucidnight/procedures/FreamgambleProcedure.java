@@ -44,7 +44,7 @@ public class FreamgambleProcedure {
 		dreamgamble = Mth.nextInt(RandomSource.create(), 1, 100);
 		if (dreamgamble < 11) {
 			if (entity instanceof ServerPlayer _player && _player.level() instanceof ServerLevel _serverLevel) {
-				ResourceKey<Level> destinationType = ResourceKey.create(Registries.DIMENSION, Identifier.parse("lucidnight:luciddream"));
+				ResourceKey<Level> destinationType = ResourceKey.create(Registries.DIMENSION, Identifier.parse("lucidnight:nightmare"));
 				if (_player.level().dimension() == destinationType)
 					return;
 				ServerLevel nextLevel = _serverLevel.getServer().getLevel(destinationType);

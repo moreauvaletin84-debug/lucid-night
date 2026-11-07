@@ -45,6 +45,34 @@
         ]
       },
       "path": "~/luciddreamworld"
+    },
+    {
+      "name": "Nightmareplains",
+      "type": "biome",
+      "compiles": true,
+      "locked_code": false,
+      "registry_name": "nightmareplains",
+      "metadata": {
+        "files": [
+          "src/main/resources/data/lucidnight/worldgen/biome/nightmareplains.json"
+        ]
+      },
+      "path": "~/nightmareworld"
+    },
+    {
+      "name": "Nightmare",
+      "type": "dimension",
+      "compiles": true,
+      "locked_code": false,
+      "registry_name": "nightmare",
+      "metadata": {
+        "files": [
+          "src/main/resources/data/lucidnight/dimension_type/nightmare.json",
+          "src/main/resources/data/lucidnight/dimension/nightmare.json",
+          "src/main/resources/data/lucidnight/timeline/nightmare_effects.json"
+        ]
+      },
+      "path": "~/nightmareworld"
     }
   ],
   "variable_elements": [],
@@ -58,7 +86,8 @@
   "tab_element_order": {},
   "language_map": {
     "en_us": {
-      "biome.lucidnight.lucidplains": "Lucid plains"
+      "biome.lucidnight.lucidplains": "Lucid plains",
+      "biome.lucidnight.nightmareplains": "Nightmare plains"
     }
   },
   "metadata": {
@@ -80,6 +109,10 @@
     "children": [
       {
         "name": "luciddreamworld",
+        "children": []
+      },
+      {
+        "name": "nightmareworld",
         "children": []
       }
     ]
