@@ -5,7 +5,7 @@
       "type": "procedure",
       "compiles": true,
       "locked_code": false,
-      "registry_name": "freamgamble",
+      "registry_name": "dfreamgamble",
       "metadata": {
         "dependencies": [
           {
