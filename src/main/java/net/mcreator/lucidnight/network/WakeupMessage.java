@@ -52,7 +52,7 @@ public record WakeupMessage(int eventType, int pressedms) implements CustomPacke
 			return;
 		if (type == 0) {
 
-			WakeupOnKeyPressedProcedure.execute(entity);
+			WakeupOnKeyPressedProcedure.execute(world, x, y, z, entity);
 		}
 	}
 
