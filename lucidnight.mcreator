@@ -83,7 +83,7 @@
     {
       "name": "LuciddreamPlayerEntersDimension",
       "type": "procedure",
-      "compiles": true,
+      "compiles": false,
       "locked_code": false,
       "registry_name": "luciddream_player_enters_dimension",
       "metadata": {
